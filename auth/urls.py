@@ -4,8 +4,10 @@ from dj_rest_auth.views import (
     LoginView, LogoutView, PasswordChangeView, PasswordResetConfirmView,
     PasswordResetView, UserDetailsView
 )
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from rest_framework_simplejwt.views import TokenVerifyView
+
+from .views import GoogleLogin
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='rest_register'),
@@ -26,4 +28,6 @@ urlpatterns = [
 
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('token/refresh/', get_refresh_view().as_view(), name='token_refresh'),
+
+    path('google/login/callback/', GoogleLogin.as_view(), name='google_login'),
 ]
