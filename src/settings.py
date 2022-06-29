@@ -50,13 +50,15 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
     'dj_rest_auth.registration',
+
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     'accounts',
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -149,17 +151,21 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
 }
 
-REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'urgify-auth'
 JWT_AUTH_REFRESH_COOKIE = 'urgify-refresh-token'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env('TOKEN_TTL')),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
 }
 
 # Email settings
@@ -178,3 +184,27 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# dj-rest-auth settings
+REST_USE_JWT = True
+
+# LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": env("GOOGLE_CLIENT_ID"),
+            "secret": env("GOOGLE_SECRET_KEY"),
+            "key": ""
+        },
+        # These are provider-specific settings that can only be
+        # listed here:
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        }
+    }
+}
