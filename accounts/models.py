@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django_ulid.models import default, ULIDField
+
+from accounts.utils import get_formatted_uuid
 
 
 class CustomUserManager(BaseUserManager):
@@ -23,7 +24,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    id = ULIDField(primary_key=True, unique=True, editable=False,  default=default)
+    id = models.CharField(primary_key=True, default=get_formatted_uuid, editable=False, max_length=255)
     email = models.EmailField(max_length=50, unique=True, null=True)
     password = models.CharField(max_length=128, null=True)
     first_name = models.CharField(max_length=50)
