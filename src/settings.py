@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
-SITE_ID = 2
+SITE_ID = env('SITE_ID', int)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -158,6 +158,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+        'REGISTER_SERIALIZER': 'auth.serializers.RegisterSerializer',
 }
 
 JWT_AUTH_COOKIE = 'urgify-auth'
