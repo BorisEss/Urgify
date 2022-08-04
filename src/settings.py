@@ -159,9 +159,6 @@ REST_FRAMEWORK = {
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     )
 }
-REST_AUTH_REGISTER_SERIALIZERS = {
-        'REGISTER_SERIALIZER': 'auth.serializers.RegisterSerializer',
-}
 
 JWT_AUTH_COOKIE = 'urgify-auth'
 JWT_AUTH_REFRESH_COOKIE = 'urgify-refresh-token'
@@ -191,8 +188,16 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
+ACCOUNT_ADAPTER = 'accounts.adapter.MyAccountAdapter'
+EMAIL_CONFIRMATION_HMAC = False
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = False
+
 # dj-rest-auth settings
 REST_USE_JWT = True
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+        'REGISTER_SERIALIZER': 'auth.serializers.RegisterSerializer',
+}
 
 # LOGIN_REDIRECT_URL = '/'
 
