@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'accounts',
+    'hospital'
 ]
 
 SITE_ID = env('SITE_ID', int)
