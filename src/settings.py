@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'phone_field',
+    'drf_yasg',
 
     'accounts',
     'hospital'
