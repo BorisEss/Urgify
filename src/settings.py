@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     DEBUG=(bool, False),
-    TOKEN_TTL=(int, 100)
+    TOKEN_TTL=(int, 5)
 )
 environ.Env.read_env()
 # Quick-start development settings - unsuitable for production
