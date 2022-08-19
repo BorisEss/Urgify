@@ -210,6 +210,10 @@ REST_AUTH_REGISTER_SERIALIZERS = {
         'REGISTER_SERIALIZER': 'auth.serializers.RegisterSerializer',
 }
 
+REST_AUTH_SERIALIZERS = {
+        'PASSWORD_RESET_SERIALIZER': 'auth.serializers.CustomPasswordResetSerializer',
+}
+
 # LOGIN_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_PROVIDERS = {
