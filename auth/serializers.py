@@ -55,9 +55,7 @@ class RegisterSerializer(serializers.Serializer):
             try:
                 adapter.clean_password(self.cleaned_data['password1'], user=user)
             except DjangoValidationError as exc:
-                raise serializers.ValidationError(
-                    detail=serializers.as_serializer_error(exc)
-            )
+                raise serializers.ValidationError(detail=serializers.as_serializer_error(exc))
         user.save()
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
