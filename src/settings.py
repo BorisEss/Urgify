@@ -144,8 +144,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'static'
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = 'staticfiles/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
@@ -208,6 +208,10 @@ REST_USE_JWT = True
 
 REST_AUTH_REGISTER_SERIALIZERS = {
         'REGISTER_SERIALIZER': 'auth.serializers.RegisterSerializer',
+}
+
+REST_AUTH_SERIALIZERS = {
+        'PASSWORD_RESET_SERIALIZER': 'auth.serializers.CustomPasswordResetSerializer',
 }
 
 # LOGIN_REDIRECT_URL = '/'

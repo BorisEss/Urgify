@@ -1,16 +1,14 @@
-from allauth.account.adapter import get_adapter
-from allauth.account.utils import setup_user_email
-from allauth.account.views import ConfirmEmailView as _ConfirmEmailView
-from django.core.exceptions import ValidationError as DjangoValidationError
-from allauth.utils import email_address_exists
-from django.utils.translation import gettext_lazy as _
 from allauth.account import app_settings as allauth_settings
-from allauth.utils import email_address_exists, get_username_max_length
+from allauth.account.adapter import get_adapter
+from allauth.account.forms import default_token_generator
+from allauth.account.utils import user_username, user_pk_to_url_str, setup_user_email
+from allauth.utils import email_address_exists
+from dj_rest_auth import forms as dj_forms
+from dj_rest_auth import serializers as dj_serializers
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
-
-
-class ConfirmEmailView(_ConfirmEmailView):
-    template_name = 'accounts/confirm_email.txt'
 
 
 class RegisterSerializer(serializers.Serializer):
@@ -57,10 +55,53 @@ class RegisterSerializer(serializers.Serializer):
             try:
                 adapter.clean_password(self.cleaned_data['password1'], user=user)
             except DjangoValidationError as exc:
-                raise serializers.ValidationError(
-                    detail=serializers.as_serializer_error(exc)
-            )
+                raise serializers.ValidationError(detail=serializers.as_serializer_error(exc))
         user.save()
         self.custom_signup(request, user)
         setup_user_email(request, user, [])
         return user
+
+
+class CustomAllAuthPasswordResetForm(dj_forms.AllAuthPasswordResetForm):
+    def save(self, request, **kwargs):
+        current_site = get_current_site(request)
+        email = self.cleaned_data['email']
+        token_generator = kwargs.get('token_generator', default_token_generator)
+
+        for user in self.users:
+
+            temp_key = token_generator.make_token(user)
+
+            # save it to the password reset model
+            # password_reset = PasswordReset(user=user, temp_key=temp_key)
+            # password_reset.save()
+
+            # send the password reset email
+            ''' Am schimbat aceasta parte a formei default fiindca este nevoie ca in email sa vina alt url
+             decat cel standard, ca url-ul sa arate mai bine pentru utilizator'''
+
+            path = f'password-reset/{user_pk_to_url_str(user)}/{temp_key}/'
+            url = request.build_absolute_uri().split('api')[0] + path  # only host and port http://127.0.0.1:8000/
+
+            context = {
+                'current_site': current_site,
+                'user': user,
+                'password_reset_url': url,
+                'request': request,
+            }
+            if allauth_settings.AUTHENTICATION_METHOD != allauth_settings.AuthenticationMethod.EMAIL:
+                context['username'] = user_username(user)
+            get_adapter(request).send_mail(
+                'account/email/password_reset_key', email, context
+            )
+        return self.cleaned_data['email']
+
+
+class CustomPasswordResetSerializer(dj_serializers.PasswordResetSerializer):
+    def validate_email(self, value):
+        # Create PasswordResetForm with the serializer
+        self.reset_form = CustomAllAuthPasswordResetForm(data=self.initial_data)
+        if not self.reset_form.is_valid():
+            raise serializers.ValidationError(self.reset_form.errors)
+
+        return value
