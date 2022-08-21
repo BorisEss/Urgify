@@ -26,8 +26,8 @@ schema_view = get_schema_view(
       title="Urgify API",
       default_version='v1',
    ),
-   public=False,
-   permission_classes=[permissions.IsAdminUser],
+   public=True,
+   permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
@@ -35,6 +35,7 @@ urlpatterns = [
         path('docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         path('admin/', admin.site.urls),
         path('auth/', include('auth.urls')),
+        path('stripe/', include('stripe_pay.urls')),
         path('hospitals/', include('hospital.urls')),
     ]))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
