@@ -15,6 +15,7 @@ from pathlib import Path
 
 import environ
 from customerio import APIClient
+import stripe
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +37,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 
-
+stripe.api_key = env('STRIPE_SECRET_KEY')
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'phone_field',
     'drf_yasg',
+    'stripe_pay',
 
     'accounts',
     'hospital'
