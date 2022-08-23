@@ -40,3 +40,10 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'auth_user'
+
+
+# Temporary table for storing users waiting list
+class WaitingList(models.Model):
+    email = models.EmailField(max_length=50, unique=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -37,5 +37,6 @@ urlpatterns = [
         path('auth/', include('auth.urls')),
         path('stripe/', include('stripe_pay.urls')),
         path('hospitals/', include('hospital.urls')),
+        path('accounts/', include('accounts.urls')),
     ]))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
