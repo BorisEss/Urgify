@@ -122,7 +122,13 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
-    )
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'waiting-list': '1/min',
+    }
 }
 
 
