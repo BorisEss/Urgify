@@ -17,6 +17,7 @@ class Base(models.Model):
 
 
 class Hospital(Base):
+    user = models.ForeignKey(User, default=None, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=True)
     slug = AutoSlugField(populate_from='name')
     logo = models.ImageField(upload_to=utils.upload_img)
