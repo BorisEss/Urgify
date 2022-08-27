@@ -128,6 +128,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'waiting-list': '1/min',
+        'dj_rest_auth': '100/sec'
     }
 }
 
