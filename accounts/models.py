@@ -44,6 +44,6 @@ class User(AbstractUser):
 
 # Temporary table for storing users waiting list
 class WaitingList(models.Model):
-    email = models.EmailField(max_length=50, unique=True, null=True)
+    email = models.EmailField(max_length=50, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
