@@ -9,3 +9,4 @@ class WaitingListViewSet(viewsets.ModelViewSet):
     queryset = models.WaitingList.objects.all()
     serializer_class = serializers.WaitingListSerializer
     permission_classes = [AllowAny]
+    throttle_scope = 'waiting-list'
