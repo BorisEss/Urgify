@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 import stripe
 
 from stripe_pay.serializers import StripePaymentIntentSerializer
@@ -8,6 +9,7 @@ from stripe_pay.serializers import StripePaymentIntentSerializer
 
 class StripePaymentIntentViewSet(viewsets.GenericViewSet):
     serializer_class = StripePaymentIntentSerializer
+    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['post'])
     def create_payment_intent(self, request):
