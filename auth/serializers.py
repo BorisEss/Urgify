@@ -13,8 +13,8 @@ from rest_framework import serializers
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=allauth_settings.EMAIL_REQUIRED)
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
+    first_name = serializers.CharField(max_length=50)
+    last_name = serializers.CharField(max_length=50)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
@@ -80,7 +80,8 @@ class CustomAllAuthPasswordResetForm(dj_forms.AllAuthPasswordResetForm):
             ''' Am schimbat aceasta parte a formei default fiindca este nevoie ca in email sa vina alt url
              decat cel standard, ca url-ul sa arate mai bine pentru utilizator'''
 
-            path = f'password-reset/{user_pk_to_url_str(user)}/{temp_key}/'
+            user_pk = user_pk_to_url_str(user)
+            path = f'password-reset/{user_pk}/{temp_key}/'
             url = request.build_absolute_uri().split('api')[0] + path  # only host and port http://127.0.0.1:8000/
 
             context = {
