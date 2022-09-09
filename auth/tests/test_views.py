@@ -9,7 +9,7 @@ from accounts import models
 
 class RegistrationTests(APITestCase):
 
-    def setUp(self) -> None:
+    def setUp(self):
         password = get_random_string(10)
         self.registration_data = {
             'email': 'test@test.com',
@@ -18,13 +18,12 @@ class RegistrationTests(APITestCase):
             'password1': password,
             'password2': password,
         }
-        self.registration_fields = ['email', 'first_name', 'last_name', 'password1', 'password2']
 
     def test_no_data(self):
         response = self.client.post(reverse('register'))
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        for field in self.registration_fields:
+        for field in self.registration_data.keys():
             assert field in response.data
             assert response.data[field][0] == 'This field is required.'
 
@@ -82,3 +81,38 @@ class RegistrationTests(APITestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data['detail'] == 'ok'
+
+
+class LoginTests(APITestCase):
+    def setUp(self):
+        password = get_random_string(10)
+        self.login_data = {
+            'email': 'test@test.com',
+            'password': password,
+        }
+        self.registration_data = {
+            'email': 'test@test.com',
+            'first_name': 'test first name',
+            'last_name': 'test last name',
+            'password1': password,
+            'password2': password,
+        }
+
+    def test_wrong_email(self):
+        response = self.client.post(reverse('login'), data=self.login_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['non_field_errors'][0] == 'Unable to log in with provided credentials.'
+
+    def test_empty_password(self):
+        response = self.client.post(reverse('login'), data={'email': self.login_data['email']})
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['password'][0] == 'This field is required.'
+
+    def test_non_verified_email(self):
+        self.client.post(reverse('register'), data=self.registration_data)
+        response = self.client.post(reverse('login'), data=self.login_data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['non_field_errors'][0] == 'E-mail is not verified.'
