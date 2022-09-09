@@ -29,4 +29,4 @@ class StripePaymentIntentViewSet(viewsets.GenericViewSet):
             )
         except stripe.error.StripeError as e:
             return Response({'error': e.user_message}, 400)
-        return Response({'client_secret': payment_intent}, 200)
+        return Response({'client_secret': payment_intent.client_secret}, 200)
