@@ -16,12 +16,13 @@ class StripePaymentIntentViewSet(viewsets.GenericViewSet):
         payment_intent_data = StripePaymentIntentSerializer(data=request.data)
         payment_intent_data.is_valid(raise_exception=True)
 
+        receipt_email = payment_intent_data.validated_data['email']
         no_need_on_stripe_fields = ['email', 'hospital_name', 'months', 'invoices']
         stripe_data = payment_intent_data.validated_data.copy()
         [stripe_data.pop(field) for field in no_need_on_stripe_fields]
 
         try:
-            payment_intent = stripe.PaymentIntent.create(**stripe_data)
+            payment_intent = stripe.PaymentIntent.create(**stripe_data, receipt_email=receipt_email)
             payment_intent_data.save(payment_intent_id=payment_intent['id'])
         except stripe.error.StripeError as e:
             return Response({'error': e.user_message}, 400)
