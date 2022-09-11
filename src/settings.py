@@ -132,6 +132,9 @@ REST_FRAMEWORK = {
     }
 }
 
+if not DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = ('rest_framework.renderers.JSONRenderer',)
+
 
 SITE_ID = env('SITE_ID', int)
 AUTH_USER_MODEL = 'accounts.User'
@@ -148,6 +151,7 @@ JWT_AUTH_COOKIE = 'urgify-auth'
 JWT_AUTH_REFRESH_COOKIE = 'urgify-refresh-token'
 
 
+# TODO trebuie sa folosesc setarile pentru urgify nu contul propriu
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env('EMAIL_HOST')
