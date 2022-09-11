@@ -32,7 +32,6 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('api/', include([
-        path('docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
         path('admin/', admin.site.urls),
         path('auth/', include('auth.urls')),
         path('accounts/', include('accounts.urls')),
@@ -40,3 +39,8 @@ urlpatterns = [
         path('hospitals/', include('hospital.urls')),
     ]))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if settings.DEBUG:
+    urlpatterns.append(
+        path('api/docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
+    )
