@@ -5,11 +5,12 @@ import environ
 from customerio import APIClient
 import stripe
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 environ.Env.read_env()
 env = environ.Env()
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+DOMAIN_NAME = env('DOMAIN_NAME')
 
 DEBUG = env('DEBUG', bool)
 SECRET_KEY = env('SECRET_KEY')
@@ -192,7 +193,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'email',
         ],
         'AUTH_PARAMS': {
-            'access_type': 'online',
+            'access_type': 'offline',
         }
     }
 }
