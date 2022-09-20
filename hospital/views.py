@@ -9,6 +9,9 @@ class HospitalViewSet(viewsets.ModelViewSet):
     queryset = models.Hospital.objects.all()
     serializer_class = serializers.HospitalSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = models.Department.objects.all()
