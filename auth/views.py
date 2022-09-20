@@ -12,7 +12,7 @@ class GoogleLogin(SocialLoginView):
 
     '''
         https://accounts.google.com/o/oauth2/v2/auth?
-        redirect_uri=http://localhost:8000/api/auth/google/login/callback/&prompt=consent&
-        response_type=code&client_id=94023399944-bvmck2cigngkukamfpl5il469e9aaogv.apps.googleusercontent.com&
+        redirect_uri=https://urgify.io/api/auth/google/login/callback/&prompt=consent&
+        response_type=code&client_id=1088507466449-sm8rjgibbeusul17ht05n7tn422jbhbu.apps.googleusercontent.com&
         scope=openid%20email%20profile&access_type=offline
     '''
