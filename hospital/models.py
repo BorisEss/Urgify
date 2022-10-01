@@ -24,9 +24,12 @@ class Hospital(Base):
 
 
 class Department(Base):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
     hospital = models.ForeignKey(Hospital, related_name='departments', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('name', 'hospital')
 
 
 class Employee(Base):
