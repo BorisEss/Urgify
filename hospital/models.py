@@ -18,6 +18,10 @@ class Base(models.Model):
 
 
 class Hospital(Base):
+    """
+    We use CaseInsensitiveCharField because we do not want
+    to be differences between test and Test names
+    """
     user = models.ForeignKey(User, default=None, on_delete=models.PROTECT)
     name = CaseInsensitiveCharField(max_length=255, unique=True)
     slug = AutoSlugField(populate_from='name')
@@ -28,7 +32,7 @@ class Hospital(Base):
 
 
 class Department(Base):
-    name = models.CharField(max_length=255)
+    name = CaseInsensitiveCharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
     hospital = models.ForeignKey(Hospital, related_name='departments', on_delete=models.CASCADE)
 
