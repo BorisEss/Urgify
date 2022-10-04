@@ -16,6 +16,7 @@ class HospitalViewSet(viewsets.ModelViewSet):
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DepartmentSerializer
+    lookup_field = 'slug'
 
     def get_queryset(self):
         return models.Department.objects.filter(hospital__slug=self.kwargs['hospital_slug'])
