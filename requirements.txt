@@ -17,6 +17,7 @@ dj-rest-auth==2.2.4
 Django==4.0.5
 django-allauth==0.50.0
 django-autoslug==1.9.8
+django-case-insensitive-field==1.0.7
 django-cors-headers==3.13.0
 django-debug-toolbar==3.5.0
 django-environ==0.8.1
