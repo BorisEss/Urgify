@@ -6,7 +6,6 @@ from phone_field import PhoneField
 from hospital import utils
 from accounts.models import User
 from accounts.utils import get_formatted_uuid
-from .fields import CaseInsensitiveCharField
 
 
 class Base(models.Model):
@@ -23,7 +22,7 @@ class Hospital(Base):
     to be differences between test and Test names
     """
     user = models.ForeignKey(User, default=None, on_delete=models.PROTECT)
-    name = CaseInsensitiveCharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     slug = AutoSlugField(populate_from='name')
     logo = models.ImageField(upload_to=utils.upload_img)
 
@@ -32,7 +31,7 @@ class Hospital(Base):
 
 
 class Department(Base):
-    name = CaseInsensitiveCharField(max_length=255)
+    name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
     hospital = models.ForeignKey(Hospital, related_name='departments', on_delete=models.CASCADE)
 
@@ -53,7 +52,7 @@ class Employee(Base):
     ATTRIBUTION_CHOICES = (
         (Finance, _('Finance')),
         (Patients, _('Patients')),
-        (Finance, _('Editor')),
+        (Editor, _('Editor')),
     )
     id = models.CharField(primary_key=True, default=get_formatted_uuid, editable=False, max_length=255)
     email = models.EmailField(max_length=50, unique=True, null=True)
