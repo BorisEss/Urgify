@@ -37,7 +37,3 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return models.Employee.objects.filter(department__slug=self.kwargs['department_slug'])
-
-    def perform_create(self, serializer):
-        department = get_object_or_404(models.Employee, slug=self.kwargs['department_slug'])
-        serializer.save(department=department)
