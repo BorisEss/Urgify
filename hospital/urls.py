@@ -8,6 +8,7 @@ hospital_list = views.HospitalViewSet.as_view({
 
 hospital_detail = views.HospitalViewSet.as_view({
     'get': 'retrieve',
+    'delete': 'destroy'
 })
 
 department_list = views.DepartmentViewSet.as_view({
