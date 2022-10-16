@@ -1,5 +1,8 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from accounts.utils import get_formatted_uuid
 
@@ -47,3 +50,27 @@ class WaitingList(models.Model):
     email = models.EmailField(max_length=50, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class MemberInvite(models.Model):
+    INVITED = 1
+    ACCEPTED = 2
+    EXPIRED = 3
+    DECLINED = 4
+    STATUS = (
+        (INVITED, 'Invited'),
+        (ACCEPTED, 'Accepted'),
+        (EXPIRED, 'Expired'),
+        (DECLINED, 'Declined'),
+    )
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    status = models.PositiveSmallIntegerField(choices=STATUS)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_invite_url(self) -> str:
+        return settings.DOMAIN_NAME + reverse('accept-invite', args=[settings.HASHER.encode(self.pk)])
+
+    @staticmethod
+    def get_invite_object_from_hash(invite_hash: settings.HASHER):
+        return get_object_or_404(MemberInvite, pk=settings.HASHER.decode(invite_hash)[0])

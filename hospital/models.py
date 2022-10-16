@@ -55,7 +55,6 @@ class Employee(Base):
         (Editor, _('Editor')),
     )
     id = models.CharField(primary_key=True, default=get_formatted_uuid, editable=False, max_length=255)
-    email = models.EmailField(max_length=50, unique=True, null=True)
     phone = PhoneField(blank=True, null=True)
     status = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATUS_CHOICES)
     attribution = models.PositiveSmallIntegerField(choices=ATTRIBUTION_CHOICES)

@@ -29,4 +29,4 @@ class MyAccountAdapter(DefaultAccountAdapter):
         try:
             emails_api.send_email(request)
         except CustomerIOException as e:
-            print("error: ", e)
+            print('Send email error: ', e)
