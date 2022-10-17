@@ -7,6 +7,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
 
 from accounts import models
 from accounts import serializers
@@ -81,6 +82,7 @@ class InviteMemberViewSet(viewsets.ViewSet):
         except CustomerIOException as e:
             print('Send email error: ', e)
 
+    @swagger_auto_schema(manual_parameters=[])
     def create(self, request, *args, **kwargs):
         hospital = get_object_or_404(Hospital, slug=self.kwargs['hospital_slug'])
         department = get_object_or_404(Department, slug=self.kwargs['department_slug'])
@@ -93,7 +95,8 @@ class InviteMemberViewSet(viewsets.ViewSet):
             serializer.validated_data['first_name'],
             serializer.validated_data['last_name'],
         )
-        self.get_or_create_employee(invited_user, department, serializer.validated_data['phone'])
+        phone = serializer.validated_data.get('phone', None)
+        self.get_or_create_employee(invited_user, department, phone)
         self.send_invite_email(invited_user, created, request.user, hospital, department)
 
         return Response(status=200)
