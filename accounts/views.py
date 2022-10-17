@@ -1,7 +1,6 @@
 from allauth.account.models import EmailAddress
 from customerio import SendEmailRequest, CustomerIOException
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -52,7 +51,7 @@ class InviteMemberViewSet(viewsets.ViewSet):
     ) -> None:
 
         button_text = 'Log In'
-        invite_link = settings.DOMAIN_NAME + reverse('login')
+        invite_link = settings.DOMAIN_NAME + 'sign-in'
         if created:
             invite = models.MemberInvite.objects.create(
                 invitee=invitee,
