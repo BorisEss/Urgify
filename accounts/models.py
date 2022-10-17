@@ -1,7 +1,6 @@
-from django.db import models
-from django.urls import reverse
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
 from django.shortcuts import get_object_or_404
 
 from accounts.utils import get_formatted_uuid
@@ -68,8 +67,9 @@ class MemberInvite(models.Model):
     status = models.PositiveSmallIntegerField(choices=STATUS)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def get_invite_url(self) -> str:
-        return settings.DOMAIN_NAME + reverse('accept-invite', args=[settings.HASHER.encode(self.pk)])
+    def get_invite_url(self, uri: str) -> str:
+        invite_hash = settings.HASHER.encode(self.pk)
+        return f'{uri}accept-invite/{invite_hash}/'
 
     @staticmethod
     def get_invite_object_from_hash(invite_hash: settings.HASHER):

@@ -1,7 +1,6 @@
 from allauth.account.models import EmailAddress
 from customerio import SendEmailRequest, CustomerIOException
 from django.shortcuts import get_object_or_404
-from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -46,12 +45,13 @@ class InviteMemberViewSet(viewsets.ViewSet):
 
     @staticmethod
     def send_invite_email(
-            invitee: models.User, created: bool, sender: models.User,
-            hospital: Hospital, department: Department
+            request, invitee: models.User, created: bool,
+            sender: models.User, hospital: Hospital, department: Department
     ) -> None:
 
         button_text = 'Log In'
-        invite_link = settings.DOMAIN_NAME + 'sign-in'
+        uri = request.build_absolute_uri('/')
+        invite_link = f'{uri}sign-in'
         if created:
             invite = models.MemberInvite.objects.create(
                 invitee=invitee,
@@ -59,7 +59,7 @@ class InviteMemberViewSet(viewsets.ViewSet):
                 status=models.MemberInvite.INVITED
             )
             button_text = 'Create an account'
-            invite_link = invite.get_invite_url()
+            invite_link = invite.get_invite_url(uri)
 
         email_request = SendEmailRequest(
             to=invitee.email,
@@ -96,7 +96,7 @@ class InviteMemberViewSet(viewsets.ViewSet):
         )
         phone = serializer.validated_data.get('phone', None)
         self.get_or_create_employee(invited_user, department, phone)
-        self.send_invite_email(invited_user, created, request.user, hospital, department)
+        self.send_invite_email(request, invited_user, created, request.user, hospital, department)
 
         return Response(status=200)
 
