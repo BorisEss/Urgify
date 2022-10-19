@@ -21,7 +21,7 @@ class WaitingListViewSet(viewsets.ModelViewSet):
     throttle_scope = 'waiting-list'
 
 
-class InviteMemberViewSet(viewsets.ViewSet):
+class InviteMemberViewSet(viewsets.GenericViewSet):
 
     @staticmethod
     def get_or_create_user(email: str, first_name: str, last_name: str) -> tuple[models.User, bool]:
@@ -100,8 +100,16 @@ class InviteMemberViewSet(viewsets.ViewSet):
 
         return Response(status=200)
 
+
+class AcceptInviteViewSet(viewsets.GenericViewSet):
+    permission_classes = (AllowAny,)
+
     def accept_invite(self, request, *args, **kwargs):
-        invitation = models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
+        try:
+            invitation = models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
+        except IndexError:
+            return Response('Hash was not found', status=status.HTTP_400_BAD_REQUEST)
+
         invitation.status = models.MemberInvite.ACCEPTED
         invitation.save()
 
