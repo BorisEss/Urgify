@@ -7,7 +7,6 @@ from hospital.permissions import MembershipPermission
 
 
 class HospitalViewSet(viewsets.ModelViewSet):
-    queryset = models.Hospital.objects.all()
     serializer_class = serializers.HospitalSerializer
     lookup_field = 'slug'
 
@@ -15,7 +14,7 @@ class HospitalViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        return models.Hospital.objects.filter(user=self.request.user)
+        return models.Hospital.objects.filter(user=self.request.user).order_by('name')
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
@@ -24,7 +23,9 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
 
     def get_queryset(self):
-        return models.Department.objects.filter(hospital__slug=self.kwargs['hospital_slug'])
+        return models.Department.objects\
+            .filter(hospital__slug=self.kwargs['hospital_slug'])\
+            .order_by('name')
 
     def perform_create(self, serializer):
         hospital = get_object_or_404(models.Hospital, slug=self.kwargs['hospital_slug'])

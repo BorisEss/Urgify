@@ -115,5 +115,6 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
 
         EmailAddress.objects.filter(user=invitation.invitee).update(verified=True)
         invitation.invitee.set_password(request.data['password'])
+        invitation.invitee.save()
 
         return Response(status=status.HTTP_200_OK)

@@ -38,6 +38,9 @@ class Department(Base):
     class Meta:
         unique_together = ('name', 'hospital')
 
+    def __str__(self):
+        return self.name
+
 
 class Employee(Base):
     PENDING = 1
@@ -60,3 +63,6 @@ class Employee(Base):
     attribution = models.PositiveSmallIntegerField(choices=ATTRIBUTION_CHOICES)
     department = models.ForeignKey(Department, related_name='employee', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='employee', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.first_name
