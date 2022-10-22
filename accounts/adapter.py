@@ -3,6 +3,7 @@ import random
 from allauth.account.adapter import DefaultAccountAdapter
 from customerio import SendEmailRequest, CustomerIOException
 from src.settings import emails_api
+from src.email import CustomerIOEmail
 
 
 class MyAccountAdapter(DefaultAccountAdapter):
@@ -17,7 +18,7 @@ class MyAccountAdapter(DefaultAccountAdapter):
 
         request = SendEmailRequest(
             to=email,
-            transactional_message_id=2,
+            transactional_message_id=CustomerIOEmail.ConfirmAccountEmail,
             message_data={
                 'confirmationKey': context['key']
             },

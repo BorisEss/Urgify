@@ -1,17 +1,20 @@
 from allauth.account.models import EmailAddress
 from customerio import SendEmailRequest, CustomerIOException
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
-from drf_yasg.utils import swagger_auto_schema
 
 from accounts import models
 from accounts import serializers
 from accounts.serializers import InviteMemberSerializer
+from hospital.permissions import MembershipPermission
 from hospital.models import Hospital, Department, Employee
 from src.settings import emails_api
+from src.email import CustomerIOEmail
 
 
 class WaitingListViewSet(viewsets.ModelViewSet):
@@ -22,6 +25,7 @@ class WaitingListViewSet(viewsets.ModelViewSet):
 
 
 class InviteMemberViewSet(viewsets.GenericViewSet):
+    permission_classes = (MembershipPermission,)
 
     @staticmethod
     def get_or_create_user(email: str, first_name: str, last_name: str) -> tuple[models.User, bool]:
@@ -37,8 +41,8 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
         return user, created
 
     @staticmethod
-    def get_or_create_employee(invited_user: models.User, department: Department, phone=None) -> None:
-        Employee.objects.get_or_create(
+    def get_or_create_employee(invited_user: models.User, department: Department, phone=None) -> Employee:
+        return Employee.objects.get_or_create(
             user=invited_user, department=department,
             defaults={'status': Employee.PENDING, 'phone': phone, 'attribution': Employee.Patients}
         )
@@ -49,21 +53,22 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             sender: models.User, hospital: Hospital, department: Department
     ) -> None:
 
-        button_text = 'Log In'
+        button_text = _('Log In')
         uri = request.build_absolute_uri('/')
         invite_link = f'{uri}sign-in'
         if created:
             invite = models.MemberInvite.objects.create(
                 invitee=invitee,
                 sender=sender,
+                department=department,
                 status=models.MemberInvite.INVITED
             )
-            button_text = 'Create an account'
+            button_text = _('Create an account')
             invite_link = invite.get_invite_url(uri)
 
         email_request = SendEmailRequest(
             to=invitee.email,
-            transactional_message_id=12,
+            transactional_message_id=CustomerIOEmail.InviteUserEmail,
             message_data={
                 'inviteeFirstName': invitee.first_name,
                 'hospitalName': hospital.name,
@@ -84,7 +89,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
     @swagger_auto_schema(manual_parameters=[])
     def create(self, request, *args, **kwargs):
         hospital = get_object_or_404(Hospital, slug=self.kwargs['hospital_slug'])
-        department = get_object_or_404(Department, slug=self.kwargs['department_slug'])
+        department = get_object_or_404(Department, slug=self.kwargs['department_slug'], hospital=hospital)
 
         serializer = InviteMemberSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -95,7 +100,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             serializer.validated_data['last_name'],
         )
         phone = serializer.validated_data.get('phone', None)
-        self.get_or_create_employee(invited_user, department, phone)
+        employee, created = self.get_or_create_employee(invited_user, department, phone)
         self.send_invite_email(request, invited_user, created, request.user, hospital, department)
 
         return Response(status=200)
@@ -108,7 +113,7 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
         try:
             invitation = models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
         except IndexError:
-            return Response('Hash was not found', status=status.HTTP_400_BAD_REQUEST)
+            return Response(_('Hash was not found'), status=status.HTTP_400_BAD_REQUEST)
 
         invitation.status = models.MemberInvite.ACCEPTED
         invitation.save()

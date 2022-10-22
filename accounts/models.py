@@ -1,18 +1,20 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils.translation import gettext as _
 from django.shortcuts import get_object_or_404
 
 from accounts.utils import get_formatted_uuid
+import hospital.models
 
 
 class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None):
         if not email:
-            raise ValueError("User must have an email")
+            raise ValueError(_('User must have an email'))
         if not password:
-            raise ValueError("User must have a password")
+            raise ValueError(_('User must have a password'))
 
         user = self.model(email=self.normalize_email(email))
         user.set_password(password)
@@ -57,15 +59,21 @@ class MemberInvite(models.Model):
     EXPIRED = 3
     DECLINED = 4
     STATUS = (
-        (INVITED, 'Invited'),
-        (ACCEPTED, 'Accepted'),
-        (EXPIRED, 'Expired'),
-        (DECLINED, 'Declined'),
+        (INVITED, _('Invited')),
+        (ACCEPTED, _('Accepted')),
+        (EXPIRED, _('Expired')),
+        (DECLINED, _('Declined')),
     )
     invitee = models.ForeignKey(User, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
     status = models.PositiveSmallIntegerField(choices=STATUS)
     created_at = models.DateTimeField(auto_now_add=True)
+    department = models.ForeignKey(
+        hospital.models.Department,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='invitees'
+    )
 
     def get_invite_url(self, uri: str) -> str:
         invite_hash = settings.HASHER.encode(self.pk)

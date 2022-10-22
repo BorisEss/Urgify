@@ -4,7 +4,6 @@ from autoslug import AutoSlugField
 from phone_field import PhoneField
 
 from hospital import utils
-from accounts.models import User
 from accounts.utils import get_formatted_uuid
 
 
@@ -21,7 +20,7 @@ class Hospital(Base):
     We use CaseInsensitiveCharField because we do not want
     to be differences between test and Test names
     """
-    user = models.ForeignKey(User, default=None, on_delete=models.PROTECT)
+    user = models.ForeignKey('accounts.User', default=None, on_delete=models.PROTECT)
     name = models.CharField(max_length=255, unique=True)
     slug = AutoSlugField(populate_from='name')
     logo = models.ImageField(upload_to=utils.upload_img)
@@ -62,7 +61,10 @@ class Employee(Base):
     status = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATUS_CHOICES)
     attribution = models.PositiveSmallIntegerField(choices=ATTRIBUTION_CHOICES)
     department = models.ForeignKey(Department, related_name='employee', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='employee', on_delete=models.CASCADE)
+    user = models.ForeignKey('accounts.User', related_name='employee', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'department')
 
     def __str__(self):
         return self.user.first_name
