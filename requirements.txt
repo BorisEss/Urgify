@@ -12,6 +12,7 @@ cryptography==37.0.2
 customerio==1.5
 decorator==5.1.1
 defusedxml==0.7.1
+diff-match-patch==20200713
 distlib==0.3.5
 dj-rest-auth==2.2.4
 Django==4.0.5
@@ -21,12 +22,14 @@ django-case-insensitive-field==1.0.7
 django-cors-headers==3.13.0
 django-debug-toolbar==3.5.0
 django-environ==0.8.1
+django-import-export==3.0.1
 django-phone-field==1.8.1
 django-phonenumber-field==7.0.0
 django-ulid==0.0.4
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.2.0
 drf-yasg==1.21.3
+et-xmlfile==1.1.0
 executing==0.8.3
 filelock==3.8.0
 hashids==1.3.1
@@ -38,10 +41,13 @@ ipython==8.4.0
 itypes==1.2.0
 jedi==0.18.1
 Jinja2==3.1.2
+MarkupPy==1.14
 MarkupSafe==2.1.1
 matplotlib-inline==0.1.3
 nodeenv==1.7.0
 oauthlib==3.2.0
+odfpy==1.4.1
+openpyxl==3.0.10
 packaging==21.3
 parso==0.8.3
 pexpect==4.8.0
@@ -68,6 +74,7 @@ six==1.16.0
 sqlparse==0.4.2
 stack-data==0.2.0
 stripe==4.1.0
+tablib==3.2.1
 toml==0.10.2
 traitlets==5.2.2.post1
 ulid-py==1.1.0
@@ -76,3 +83,5 @@ urllib3==1.26.9
 uWSGI==2.0.20
 virtualenv==20.16.3
 wcwidth==0.2.5
+xlrd==2.0.1
+xlwt==1.3.0

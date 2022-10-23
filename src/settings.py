@@ -64,8 +64,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'phone_field',
     'drf_yasg',
-    'stripe_pay',
+    'import_export',
 
+    'stripe_pay',
     'accounts',
     'hospital',
 ]
@@ -119,6 +120,9 @@ emails_api = APIClient(env('API_CLIENT'))
 # Stripe configuration
 stripe.api_key = env('STRIPE_SECRET_KEY')
 
+
+# Import-Export configuration
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
