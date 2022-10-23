@@ -52,7 +52,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             request, invitee: models.User, created: bool,
             sender: models.User, hospital: Hospital, department: Department
     ) -> None:
-
+        print(created)
         button_text = _('Log In')
         uri = request.build_absolute_uri('/')
         invite_link = f'{uri}sign-in'
@@ -94,16 +94,18 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
         serializer = InviteMemberSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        invited_user, created = self.get_or_create_user(
+        invited_user, user_created = self.get_or_create_user(
             serializer.validated_data['email'],
             serializer.validated_data['first_name'],
             serializer.validated_data['last_name'],
         )
         phone = serializer.validated_data.get('phone', None)
-        employee, created = self.get_or_create_employee(invited_user, department, phone)
-        self.send_invite_email(request, invited_user, created, request.user, hospital, department)
+        employee, employee_created = self.get_or_create_employee(invited_user, department, phone)
 
-        return Response(status=200)
+        if employee_created:
+            self.send_invite_email(request, invited_user, user_created, request.user, hospital, department)
+            return Response(status=200)
+        return Response(_('Invitee is already an employee of this department'), status=status.HTTP_400_BAD_REQUEST)
 
 
 class AcceptInviteViewSet(viewsets.GenericViewSet):
