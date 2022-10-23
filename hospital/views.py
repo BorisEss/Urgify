@@ -34,6 +34,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = models.Employee.objects.all()
+    permission_classes = (MembershipPermission,)
     serializer_class = serializers.EmployeeSerializer
 
     def get_queryset(self):
