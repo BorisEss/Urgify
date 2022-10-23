@@ -42,12 +42,6 @@ class Department(Base):
 
 
 class Employee(Base):
-    PENDING = 1
-    ACTIVE = 2
-    STATUS_CHOICES = (
-        (PENDING, _('Pending')),
-        (ACTIVE, _('Active')),
-    )
     Finance = 1
     Patients = 2
     Editor = 3
@@ -58,7 +52,6 @@ class Employee(Base):
     )
     id = models.CharField(primary_key=True, default=get_formatted_uuid, editable=False, max_length=255)
     phone = PhoneField(blank=True, null=True)
-    status = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATUS_CHOICES)
     attribution = models.PositiveSmallIntegerField(choices=ATTRIBUTION_CHOICES)
     department = models.ForeignKey(Department, related_name='employee', on_delete=models.CASCADE)
     user = models.ForeignKey('accounts.User', related_name='employee', on_delete=models.CASCADE)

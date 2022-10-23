@@ -54,19 +54,19 @@ class WaitingList(models.Model):
 
 
 class MemberInvite(models.Model):
-    INVITED = 1
+    Pending = 1
     ACCEPTED = 2
     EXPIRED = 3
     DECLINED = 4
     STATUS = (
-        (INVITED, _('Invited')),
+        (Pending, _('Pending')),
         (ACCEPTED, _('Accepted')),
         (EXPIRED, _('Expired')),
         (DECLINED, _('Declined')),
     )
     invitee = models.ForeignKey(User, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
-    status = models.PositiveSmallIntegerField(choices=STATUS)
+    status = models.PositiveSmallIntegerField(choices=STATUS, default=Pending)
     created_at = models.DateTimeField(auto_now_add=True)
     department = models.ForeignKey(
         hospital.models.Department,

@@ -60,8 +60,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             invite = models.MemberInvite.objects.create(
                 invitee=invitee,
                 sender=sender,
-                department=department,
-                status=models.MemberInvite.INVITED
+                department=department
             )
             button_text = _('Create an account')
             invite_link = invite.get_invite_url(uri)

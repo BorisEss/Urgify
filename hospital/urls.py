@@ -21,7 +21,6 @@ department_detail = views.DepartmentViewSet.as_view({
 
 employee_list = views.EmployeeViewSet.as_view({
     'get': 'list',
-    'post': 'create',
 })
 
 urlpatterns = [
