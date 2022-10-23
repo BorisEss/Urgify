@@ -44,7 +44,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
     def get_or_create_employee(invited_user: models.User, department: Department, phone=None) -> Employee:
         return Employee.objects.get_or_create(
             user=invited_user, department=department,
-            defaults={'status': Employee.PENDING, 'phone': phone, 'attribution': Employee.Patients}
+            defaults={'phone': phone, 'attribution': Employee.Patients}
         )
 
     @staticmethod
