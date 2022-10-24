@@ -30,6 +30,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     department = serializers.StringRelatedField()
     attribution = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Employee
@@ -43,3 +44,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
         if invitation:
             return invitation.get_status_display()
         return _('Active')
+
+    def get_email(self, instance):
+        return instance.user.email
