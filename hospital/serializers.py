@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from django.utils.translation import gettext as _
 
 from hospital import models
+from accounts.models import MemberInvite
 
 
 class HospitalSerializer(serializers.ModelSerializer):
@@ -24,7 +26,24 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    department = serializers.StringRelatedField()
+    attribution = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Employee
-        fields = ('attribution',)
+        fields = '__all__'
+
+    def get_attribution(self, instance):
+        return instance.get_attribution_display()
+
+    def get_status(self, instance):
+        invitation = MemberInvite.objects.filter(invitee=instance.user, department=instance.department).last()
+        if invitation:
+            return invitation.get_status_display()
+        return _('Active')
+
+    def get_email(self, instance):
+        return instance.user.email

@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+import hashids
 
 import environ
 from customerio import APIClient
@@ -33,6 +34,8 @@ STATIC_URL = 'staticfiles/'
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
 
+HASHER = hashids.Hashids(salt=SECRET_KEY, min_length=16, alphabet='abcdefghijklmnopqrstuvwxyz0123456789')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
@@ -64,7 +67,7 @@ INSTALLED_APPS = [
     'stripe_pay',
 
     'accounts',
-    'hospital'
+    'hospital',
 ]
 
 MIDDLEWARE = [
