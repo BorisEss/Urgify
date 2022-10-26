@@ -43,7 +43,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         invitation = MemberInvite.objects.filter(invitee=instance.user, department=instance.department).last()
         if invitation:
             return invitation.get_status_display()
-        return _('Active')
+        return _('Accepted')
 
     def get_email(self, instance):
         return instance.user.email
