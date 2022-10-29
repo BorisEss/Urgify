@@ -120,38 +120,36 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
 
     @staticmethod
     def validate_invitation_hash(request) -> models.MemberInvite | Response:
-        try:
-            invitation = models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
-        except IndexError:
-            return Response(_('Invitation was not found'), status=status.HTTP_400_BAD_REQUEST)
-
-        if invitation.status == models.MemberInvite.ACCEPTED:
-            return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
-
-        return invitation
+        return models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
 
     @staticmethod
     def accept_invite(invitation: models.MemberInvite):
+        with transaction.atomic():
+            invitation.status = models.MemberInvite.ACCEPTED
+            invitation.save()
+
+            employee = invitation.invitee.employee.get(department=invitation.department)
+            employee.status = Employee.ACTIVE
+            employee.save()
+
+            EmailAddress.objects.filter(user=invitation.invitee).update(verified=True)
+
+    def accept_invite_new_user(self, request, *args, **kwargs):
         try:
-            with transaction.atomic():
-                invitation.status = models.MemberInvite.ACCEPTED
-                invitation.save()
-
-                employee = invitation.invitee.employee.get(department=invitation.department)
-                employee.status = Employee.ACTIVE
-                employee.save()
-
-                EmailAddress.objects.filter(user=invitation.invitee).update(verified=True)
+            invitation = self.validate_invitation_hash(request)
+            self.accept_invite(invitation)
         except DatabaseError as e:
             logging.error(e, exc_info=True)
             return Response(
                 _('Error when trying to save invitation status'),
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        except IndexError as e:
+            logging.error(e, exc_info=True)
+            return Response(_('Invitation was not found'), status=status.HTTP_400_BAD_REQUEST)
 
-    def accept_invite_new_user(self, request, *args, **kwargs):
-        invitation = self.validate_invitation_hash(request)
-        self.accept_invite(invitation)
+        if invitation.status == models.MemberInvite.ACCEPTED:
+            return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
 
         invitation.invitee.set_password(request.data['password'])
         invitation.invitee.save()
@@ -159,6 +157,20 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
         return Response(status=status.HTTP_200_OK)
 
     def accept_invite_existing_user(self, request):
-        invitation = self.validate_invitation_hash(request)
-        self.accept_invite(invitation)
+        try:
+            invitation = self.validate_invitation_hash(request)
+            self.accept_invite(invitation)
+        except DatabaseError as e:
+            logging.error(e, exc_info=True)
+            return Response(
+                _('Error when trying to save invitation status'),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except IndexError as e:
+            logging.error(e, exc_info=True)
+            return Response(_('Invitation was not found'), status=status.HTTP_400_BAD_REQUEST)
+
+        if invitation.status == models.MemberInvite.ACCEPTED:
+            return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
+
         return Response(status=status.HTTP_200_OK)
