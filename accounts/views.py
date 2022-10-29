@@ -60,7 +60,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             url = f'{uri}accept-invite-new-user/'
 
         invite_hash = invite.get_invite_hash()
-        url += f'{invite_hash}?hospital={hospital.slug}&department={invite.department.slug}'
+        url += f'{invite_hash}/hospital={hospital.slug}/department={invite.department.slug}'
 
         email_request = SendEmailRequest(
             to=invite.invitee.email,
