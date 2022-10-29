@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.utils.translation import gettext as _
 
 from hospital import models
-from accounts.models import MemberInvite
 
 
 class HospitalSerializer(serializers.ModelSerializer):
@@ -21,7 +20,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
     def validate_name(self, value):
         hospital_slug = self.context.get('view').kwargs.get('hospital_slug')
         if models.Department.objects.filter(hospital__slug=hospital_slug, name=value).exists():
-            raise serializers.ValidationError('Department name must be unique in context of hospital')
+            raise serializers.ValidationError(_('Department name must be unique in context of hospital'))
         return value
 
 
@@ -40,10 +39,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return instance.get_attribution_display()
 
     def get_status(self, instance):
-        invitation = MemberInvite.objects.filter(invitee=instance.user, department=instance.department).last()
-        if invitation:
-            return invitation.get_status_display()
-        return _('Accepted')
+        return instance.get_status_display()
 
     def get_email(self, instance):
         return instance.user.email
