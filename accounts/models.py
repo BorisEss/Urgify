@@ -57,15 +57,13 @@ class MemberInvite(models.Model):
     Pending = 1
     ACCEPTED = 2
     EXPIRED = 3
-    DECLINED = 4
     STATUS = (
         (Pending, _('Pending')),
         (ACCEPTED, _('Accepted')),
         (EXPIRED, _('Expired')),
-        (DECLINED, _('Declined')),
     )
-    invitee = models.ForeignKey(User, on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitations')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invited')
     status = models.PositiveSmallIntegerField(choices=STATUS, default=Pending)
     created_at = models.DateTimeField(auto_now_add=True)
     department = models.ForeignKey(
@@ -75,9 +73,8 @@ class MemberInvite(models.Model):
         related_name='invitees'
     )
 
-    def get_invite_url(self, uri: str) -> str:
-        invite_hash = settings.HASHER.encode(self.pk)
-        return f'{uri}accept-invite/{invite_hash}/'
+    def get_invite_hash(self) -> str:
+        return settings.HASHER.encode(self.pk)
 
     @staticmethod
     def get_invite_object_from_hash(invite_hash: settings.HASHER):

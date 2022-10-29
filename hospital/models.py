@@ -42,17 +42,24 @@ class Department(Base):
 
 
 class Employee(Base):
-    Finance = 1
-    Patients = 2
-    Editor = 3
+    FINANCE = 1
+    PATIENTS = 2
+    EDITOR = 3
     ATTRIBUTION_CHOICES = (
-        (Finance, _('Finance')),
-        (Patients, _('Patients')),
-        (Editor, _('Editor')),
+        (FINANCE, _('Finance')),
+        (PATIENTS, _('Patients')),
+        (EDITOR, _('Editor')),
+    )
+    ACTIVE = 1
+    PENDING = 2
+    PATIENT_STATUS_CHOICES = (
+        (ACTIVE, _('Active')),
+        (PENDING, _('Pending')),
     )
     id = models.CharField(primary_key=True, default=get_formatted_uuid, editable=False, max_length=255)
     phone = PhoneField(blank=True, null=True)
     attribution = models.PositiveSmallIntegerField(choices=ATTRIBUTION_CHOICES)
+    status = models.PositiveSmallIntegerField(choices=PATIENT_STATUS_CHOICES, default=PENDING)
     department = models.ForeignKey(Department, related_name='employee', on_delete=models.CASCADE)
     user = models.ForeignKey('accounts.User', related_name='employee', on_delete=models.CASCADE)
 

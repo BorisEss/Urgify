@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='employee',
             name='attribution',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'Finance'), (2, 'Patients'), (3, 'Editor')]),
+            field=models.PositiveSmallIntegerField(choices=[(1, 'Finance'), (2, 'Patients'), (3, 'EDITOR')]),
         ),
         migrations.AlterField(
             model_name='hospital',
