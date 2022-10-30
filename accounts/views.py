@@ -108,7 +108,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
 
         if invitation_created:
             self.send_invite_email(request, invite, hospital, user_created)
-            return Response(status=200)
+            return Response(status=status.HTTP_201_CREATED)
 
         message = 'Invitation for this user in this department is already sent'
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
