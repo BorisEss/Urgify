@@ -12,7 +12,6 @@ import logging
 
 from accounts import models
 from accounts import serializers
-from accounts.serializers import InviteMemberSerializer
 from hospital.permissions import MembershipPermission
 from hospital.models import Hospital, Department, Employee
 from src.settings import emails_api
@@ -60,7 +59,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
             url = f'{uri}accept-invite-new-user/'
 
         invite_hash = invite.get_invite_hash()
-        url += f'{invite_hash}/hospital={hospital.slug}/department={invite.department.slug}'
+        url += f'{invite_hash}/{hospital.slug}/{invite.department.slug}'
 
         email_request = SendEmailRequest(
             to=invite.invitee.email,
@@ -87,7 +86,7 @@ class InviteMemberViewSet(viewsets.GenericViewSet):
         hospital = get_object_or_404(Hospital, slug=self.kwargs['hospital_slug'])
         department = get_object_or_404(Department, slug=self.kwargs['department_slug'], hospital=hospital)
 
-        serializer = InviteMemberSerializer(data=request.data)
+        serializer = serializers.InviteMemberSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone = serializer.validated_data.get('phone', None)
 
@@ -119,8 +118,8 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
 
     @staticmethod
-    def validate_invitation_hash(request) -> models.MemberInvite | Response:
-        return models.MemberInvite.get_invite_object_from_hash(request.data['hash'])
+    def validate_invitation_hash(invitation_hash) -> models.MemberInvite | Response:
+        return models.MemberInvite.get_invite_object_from_hash(invitation_hash)
 
     @staticmethod
     def accept_invite(invitation: models.MemberInvite):
@@ -135,8 +134,13 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
             EmailAddress.objects.filter(user=invitation.invitee).update(verified=True)
 
     def accept_invite_new_user(self, request, *args, **kwargs):
+        serializer = serializers.AcceptInviteNewUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         try:
-            invitation = self.validate_invitation_hash(request)
+            invitation = self.validate_invitation_hash(serializer.validated_data['hash'])
+            if invitation.status == models.MemberInvite.ACCEPTED:
+                return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
+
             self.accept_invite(invitation)
         except DatabaseError as e:
             logging.error(e, exc_info=True)
@@ -148,17 +152,17 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
             logging.error(e, exc_info=True)
             return Response(_('Invitation was not found'), status=status.HTTP_400_BAD_REQUEST)
 
-        if invitation.status == models.MemberInvite.ACCEPTED:
-            return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
-
-        invitation.invitee.set_password(request.data['password'])
+        invitation.invitee.set_password(serializer.validated_data['password'])
         invitation.invitee.save()
 
         return Response(status=status.HTTP_200_OK)
 
     def accept_invite_existing_user(self, request):
         try:
-            invitation = self.validate_invitation_hash(request)
+            invitation = self.validate_invitation_hash(request.data['hash'])
+            if invitation.status == models.MemberInvite.ACCEPTED:
+                return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
+
             self.accept_invite(invitation)
         except DatabaseError as e:
             logging.error(e, exc_info=True)
@@ -169,8 +173,5 @@ class AcceptInviteViewSet(viewsets.GenericViewSet):
         except IndexError as e:
             logging.error(e, exc_info=True)
             return Response(_('Invitation was not found'), status=status.HTTP_400_BAD_REQUEST)
-
-        if invitation.status == models.MemberInvite.ACCEPTED:
-            return Response(_('User already accepted this invite'), status=status.HTTP_400_BAD_REQUEST)
 
         return Response(status=status.HTTP_200_OK)
