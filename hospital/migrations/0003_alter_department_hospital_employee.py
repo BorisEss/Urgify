@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=50, null=True, unique=True)),
                 ('phone', phone_field.models.PhoneField(blank=True, max_length=31, null=True)),
                 ('status', models.PositiveSmallIntegerField(blank=True, choices=[(1, 'Pending'), (2, 'Active')], null=True)),
-                ('attribution', models.PositiveSmallIntegerField(choices=[(1, 'Finance'), (2, 'Patients'), (1, 'Editor')])),
+                ('attribution', models.PositiveSmallIntegerField(choices=[(1, 'Finance'), (2, 'Patients'), (1, 'EDITOR')])),
                 ('department', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='employee', to='hospital.department')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='employee', to=settings.AUTH_USER_MODEL)),
             ],

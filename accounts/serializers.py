@@ -15,3 +15,8 @@ class InviteMemberSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=55)
     email = serializers.EmailField()
     phone = serializers.CharField(required=False)
+
+
+class AcceptInviteNewUserSerializer(serializers.Serializer):
+    hash = serializers.CharField(max_length=50)
+    password = serializers.CharField(max_length=50)
