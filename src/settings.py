@@ -68,7 +68,6 @@ INSTALLED_APPS = [
 
     'stripe_pay',
     'accounts',
-    'hospital',
 ]
 
 MIDDLEWARE = [

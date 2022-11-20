@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils.translation import gettext as _
+from django.core.validators import FileExtensionValidator
 
 from hospital import models
 
@@ -43,3 +44,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
     def get_email(self, instance):
         return instance.user.email
+
+
+class ImportPatientsSerializer(serializers.Serializer):
+    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])

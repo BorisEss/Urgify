@@ -68,3 +68,8 @@ class Employee(Base):
 
     def __str__(self):
         return self.user.first_name
+
+
+class Patient(Base):
+    email = models.EmailField()
+    hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE, related_name='patients')

@@ -24,10 +24,17 @@ employee_list = views.EmployeeViewSet.as_view({
     'get': 'list',
 })
 
+patient_list = views.PatientViewSet.as_view({
+    'post': 'import_patients'
+})
+
 urlpatterns = [
     path('', hospital_list, name='hospital-list'),
     path('<slug:slug>/', hospital_detail, name='hospital-detail'),
     path('<slug:hospital_slug>/departments/', department_list, name='department-list'),
     path('<slug:hospital_slug>/departments/<slug:slug>/', department_detail, name='department-detail'),
     path('<slug:hospital_slug>/departments/<slug:department_slug>/employee/', employee_list, name='employee-list'),
+
+
+    path('<slug:hospital_slug>/patients/import/', patient_list, name='patients-import'),
 ]
